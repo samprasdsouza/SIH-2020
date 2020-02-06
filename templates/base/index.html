@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>sPYder</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+  <body>
+    
+		<div class="wrapper d-flex align-items-stretch">
+			<nav id="sidebar">
+        <form action="{% url 'querypage:filter' %}" method="post">
+          {% csrf_token %}
+          <div class="p-4 pt-5">
+		  		<a href="#" class="img logo rounded-circle mb-5" ></a>
+	        <ul class="list-unstyled components mb-5">
+	          <li class="active">
+	            <a >Home  <input name = "passValue1" value="{{ else }}" style="display: none;"></a>
+	            <!-- <ul class="collapse list-unstyled" id="homeSubmenu">
+                <li>
+                    <a href="#">Home 1</a>
+                </li>
+                <li>
+                    <a href="#">Home 2</a>
+                </li>
+                <li>
+                    <a href="#">Home 3</a>
+                </li>
+	            </ul> -->
+	          </li>
+	          <li>
+	             <!-- <a href="#">About</a> --> <a href="#LocationSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Location</a>
+          <ul class="collapse list-unstyled" id="LocationSubmenu">
+                <li>
+   <a > <input type="text" class="no-outline" name="Location"  id="autocomplete" onFocus="geolocate()"  placeholder="Please Enter A Location " style="border: none;background-color: #1d1919;color: white; width: 100%;"></a>
+<!--                     <input type="text" name="Location" placeholder="Please Enter A Location ">
+
+  id="autocomplete" placeholder="Enter your address" onFocus="geolocate()"
+ -->                </li>
+           <!--      <li>
+                    <a href="#">about 2</a>
+                </li> -->
+            <!--     <li>
+                    <a href="#">about 3</a>
+                </li>
+ -->              </ul>
+            </li>
+	        <!--   </li> -->
+	          <li>
+              <a href="#SourceSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Source </a>
+    
+              <ul class="collapse list-unstyled" id="SourceSubmenu">
+                <!-- <li>
+                    <a > Case Study <input type="checkbox" name="caseStudy" style="float: right;"></a>
+                </li> -->
+                <li>
+                    <a > News Article / Blogs <input type="checkbox" name="newsArticle" style="position: relative; float: right;"></a>
+                </li>
+                <li>
+                    <a > Social Media <input type="checkbox" name="socialMedia" style="position: relative; float: right;"></a>
+                </li>
+                <li>
+                  <a > Case Study  <input type="checkbox" name="caseStudy" style="position: relative; float: right;"></a>
+              </li> 
+              <li>
+                <a >  Organisation  <input type="checkbox" name="organisation" style="position: relative; float: right;"></a>
+            </li>
+              </ul>
+	          </li>
+               <li>
+              <a href="#TimeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Date Range  </a>
+              <ul class="collapse list-unstyled" id="TimeSubmenu">
+       
+                <li style="width: 100%;"> 
+                    <a >From <input type="month" class="start" name="Date" style="position: relative; float: right;"></a>
+                </li>
+                <li style="width: 100%;">
+                  <a >To  <input type="month" class="start" name="DateTo" style="position: relative; float: right;"></a>
+              </li>
+              <!-- <li style="width: 100%;"> 
+                <a >From2 <input type="month" class="start" name="Date" style="position: relative; float: right;"></a>
+            </li> -->
+                
+              </ul>
+            </li>
+	         <li style="margin: 10px;" >
+             <button type="submit" style="margin-left: 75px; margin-top: 10px; color: white; background-color: #f8b739; border: none; padding-left: 10px; padding-right: 10px; border-radius: 5px; font-weight: 600";>Apply</button>
+           </li>
+	        </ul>
+
+	        <div class="footer"><!-- 
+	        	<p> Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+						  <!-- Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib.com</a> -->
+					  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0.</p> --> 
+	        </div>
+
+        </div>
+        </form>
+    	</nav>
+          
+        <!-- Page Content  -->
+      <div id="content" class="p-4 p-md-5">
+          <div class="navbarnew">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="container-fluid">
+
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+              <!-- <button type="button" id="sidebarOpen" class="btn btn-primary"> -->
+              <i class="fa fa-close" id="collapseButton"></i>
+               <!-- <i class="fa fa-bars" id="collapseButton"></i>  -->
+              <span class="sr-only">Toggle Menu</span>
+            </button>
+           <!--  <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa fa-bars"></i>
+            </button> -->
+              <div class="wrap" style="padding-right: 0%,align='center'">
+                  <div class="search">
+                     <!-- <form action></form> -->
+                     <form action ="{% url 'querypage:keyword' %}" method="post" style="align-items:baseline ">
+                      {% csrf_token %}
+                     <input type="text" class="searchTerm" placeholder="What are you looking for?" name="keyword" default="pornography">
+                     <button type="submit" class="searchButton">
+                       </form>
+                    <i class="fa fa-search"></i>
+                     </button>
+                    </div>
+                </div>
+      </div>
+
+            <!-- <div class="collapse navbar-collapse" id="navbarSupportedContent"> -->
+            
+              <!-- <ul class="nav navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Portfolio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+              </ul> -->
+            <!-- </div> -->
+          <!-- </div> -->
+        </nav>
+
+          </div>
+        
+<div> 
+     we  print the keyword
+
+     the result is:{{ else }}
+
+    <br> The Paramters for query:<br>
+     location: {{location}}<br>
+     NewsArticl:{{NewsArticle}}<br>
+     SocialMedia:{{SocialMedia}}<br>
+     CaseStudy:{{CaseStudy}}<br>
+     Organisation:{{Organisation}}<br>
+     DateForm:{{DateForm}}<br>
+     DateTo:{{DateTo}}<br>        
+    <!-- <input name = "passValue2" value="{{ else }}"> -->
+  <!-- </form> -->
+<br><br>
+The href of website with date greater than DateForm:{{DateForm}} <br>
+
+
+    {% for a in find %}
+
+
+      <p>{{ a.Date }}</p><br>
+{% endfor %}
+    
+
+
+<div class="card">
+  <!-- <img src="img_avatar2.png" alt="Avatar" style="width:100%"> -->
+  <div class="container">
+    <h4><b>Jane Doe</b></h4>
+    <p>Interior Designer</p>
+  </div>
+</div>
+<style>
+  .card {
+    background-color: rgba(248, 183, 57, 0.1);
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 95%;
+    border-radius: 5px;
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+  
+  img {
+    border-radius: 5px 5px 0 0;
+  }
+  
+  .container {
+    padding: 2px 16px;
+  }
+  </style>
+
+</div>
+      </div>
+		<!-- </div> -->
+
+    <script src="{% static 'js/classie.js' %}"></script>
+    <script src=" {% static 'js/popper.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+      // This sample uses the Autocomplete widget to help the user select a
+      // place, then it retrieves the address components associated with that
+      // place, and then it populates the form fields with those details.
+      // This sample requires the Places library. Include the libraries=places
+      // parameter when you first load the API. For example:
+      // <script
+      // src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+      
+      var placeSearch, autocomplete;
+      
+      var componentForm = {
+        street_number: 'short_name',
+        route: 'long_name',
+        locality: 'long_name',
+        administrative_area_level_1: 'short_name',
+        country: 'long_name',
+        postal_code: 'short_name'
+      };
+      
+      function initAutocomplete() {
+        // Create the autocomplete object, restricting the search predictions to
+        // geographical location types.
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('autocomplete'), {types: ['geocode']});
+      
+        // Avoid paying for data that you don't need by restricting the set of
+        // place fields that are returned to just the address components.
+        autocomplete.setFields(['address_component']);
+      
+        // When the user selects an address from the drop-down, populate the
+        // address fields in the form.
+        autocomplete.addListener('place_changed', fillInAddress);
+      }
+      
+      function fillInAddress() {
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+      
+        for (var component in componentForm) {
+          document.getElementById(component).value = '';
+          document.getElementById(component).disabled = false;
+        }
+      
+        // Get each component of the address from the place details,
+        // and then fill-in the corresponding field on the form.
+        for (var i = 0; i < place.address_components.length; i++) {
+          var addressType = place.address_components[i].types[0];
+          if (componentForm[addressType]) {
+            var val = place.address_components[i][componentForm[addressType]];
+            document.getElementById(addressType).value = val;
+          }
+        }
+      }
+      
+      // Bias the autocomplete object to the user's geographical location,
+      // as supplied by the browser's 'navigator.geolocation' object.
+      function geolocate() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle(
+                {center: geolocation, radius: position.coords.accuracy});
+            autocomplete.setBounds(circle.getBounds());
+          });
+        }
+      }
+          </script>
+          <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXJFZsa5drNSBDoGSriAj0w7NdEMc4VbU&libraries=places&callback=initAutocomplete"
+              async defer></script>
+  </body>
+</html>
