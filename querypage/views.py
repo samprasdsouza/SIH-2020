@@ -8,9 +8,11 @@ from bs4 import BeautifulSoup
 from datetime import date,timedelta,datetime
 import urllib.request
 import urllib.parse
+from datetime import datetime
 import ast
 import json
 #import requests
+from django.db.models import Q, Count
 
 #import sys
 #import pymysql
@@ -19,6 +21,10 @@ import requests
 # Create your views here.
 
 keyword_to_be_searched ="pornography"
+
+def home(request):
+    return render(request,'base/demo.html')
+
 def landing(request):
     print("hello world")
     # .objects.all().delete()
@@ -60,8 +66,10 @@ def keyword(request):
     t5.join()
     # both threads completely executed 
     print("Done!")
+    distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+    All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+    d={'else':keyword_to_be_searched,'All_objects':All_objects}
 
-    d={'else':keyword_to_be_searched}
     return render(request,'base/index.html',d)
     
 def filter(request):
@@ -101,14 +109,159 @@ def filter(request):
     print("date to:",DateTo) 
     # print("Date2:",Date2
     # res = ParseData.objects.filter(date_gt)
-    if len(str(DateFrom)) > 0 and (DateFrom != False):
-        print("yes ")
-        # DateFrom = str(DateFrom)
-        # DateFrom+="-01"
-        # print(DateFrom)
-        # find=ParseData.objects.filter(date__gt=DateFrom)
-        # d= {'find':find}
-        # print(find)
+    datetime_object1=""
+    datetime_object2=""
+    if(DateFrom!='' and DateTo!=''):
+        datetime_object1 = datetime.strptime(DateFrom, '%Y-%m')
+        datetime_object2 = datetime.strptime(DateTo, '%Y-%m')
+    elif(DateFrom!=''):
+        datetime_object1 = datetime.strptime(DateFrom, '%Y-%m')
+    elif(DateTo!=''):
+        datetime_object2 = datetime.strptime(DateTo, '%Y-%m')
+    
+    ## writing query based on the  input field selected
+    # single select check box
+    
+    if(datetime_object1 and datetime_object2 and datetime_object1 > datetime_object2):
+        d1 = {'error':"Please enter a valid date range"} 
+        return render(request,'base/index.html',d1)
+    if(SocialMedia=="on" and NewsArticle==False and CaseStudy==False):
+        # All_objects = ParseData.objects.filter(source='social media')
+        if datetime_object1 and datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='social media',date__gte=datetime_object1,date__lte=datetime_object2)
+            
+            # print(All_objects)
+        elif datetime_object1:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='social media',date__gte=datetime_object1)
+        elif datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='social media',date__lte=datetime_object2)
+        else:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='social media')
+        print(All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+    elif(CaseStudy=="on" and SocialMedia==False and NewsArticle==False):
+        #All_objects = ParseData.objects.filter(source='case study')
+        if datetime_object1 and datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='case study',date__gte=datetime_object1,date__lte=datetime_object2)
+            # print(All_objects)
+        elif datetime_object1:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='case study',date__gte=datetime_object1)
+        elif datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+            All_objects = All_objects.filter(source='case study',date__lte=datetime_object2)
+        else:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+            All_objects = All_objects.filter(source='case study')
+        # print(All_objects)
+        print(All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+    elif(NewsArticle=="on" and CaseStudy==False and SocialMedia==False):
+        # All_objects = ParseData.objects.filter(source='News')
+        if datetime_object1 and datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='News',date__gte=datetime_object1,date__lte=datetime_object2)
+            # print(All_objects)
+        elif datetime_object1:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+            All_objects = All_objects.filter(source='News',date__gte=datetime_object1)
+        elif datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(source='News',date__lte=datetime_object2)
+        else:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+
+            All_objects = All_objects.filter(source='News')
+        print(All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+        #Multiple Select item 
+    elif(CaseStudy =="on" and SocialMedia=="on" and NewsArticle==False):
+        distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+        All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+        All_objects = All_objects.filter(Q(source='case study') | Q(source='social media'))
+        print(All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+    elif(CaseStudy =="on" and NewsArticle=="on" and SocialMedia==False):
+        distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+        All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+        All_objects = All_objects.filter(Q(source='News')|Q(source='case study'))
+        print(All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+    elif(NewsArticle =="on" and SocialMedia=="on" and CaseStudy==False):
+        distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+        All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+        All_objects = All_objects.filter(Q(source='social media')|Q(source='News'))
+        print(All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+    elif(CaseStudy =="on" and SocialMedia=="on" and NewsArticle=="on"):
+        distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+        All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+        All_objects = All_objects.filter(Q(source='social media')|Q(source='case study')|Q(source='News'))
+        print(All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+    elif(CaseStudy ==False and SocialMedia==False and NewsArticle==False):
+        if datetime_object1 and datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(date__gte=datetime_object1,date__lte=datetime_object2)
+            print(All_objects)
+        elif datetime_object1:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(date__gte=datetime_object1)
+        elif datetime_object2:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            All_objects = All_objects.filter(date__lte=datetime_object2)
+        else:
+            distinct=ParseData.objects.values('description').annotate(name_count=Count('description')).filter(name_count=1)
+            All_objects = ParseData.objects.filter(description__in=[item['description'] for item in distinct])
+            
+            # a=ParseData.objects.values_list('description', flat=True).distinct()
+            # All_objects = ParseData.objects.filter(description__in=a)
+            print("data",All_objects)
+        d1 = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo,'All_objects':All_objects}
+        return render(request,'base/index.html',d1)
+
+
+    
+
+
+
+    
+    
+
     d = {'else':k,'location':location,'NewsArticle':NewsArticle,'SocialMedia':SocialMedia,'CaseStudy':CaseStudy,'Organisation':Organisation,'DateForm':DateFrom,'DateTo':DateTo}
     
     return render(request,'base/index.html',d)
@@ -140,7 +293,18 @@ def toi():
         desc=c.find('p').text
         desc=title+' '+desc
         source = "News"
-        date=datetime.strptime(date,'%d %b %Y')
+        #
+        try:
+            date=str(date)
+            date=date.split('T')
+            date=date[0]
+            date_object = datetime.strptime(date, '%Y-%m-%d')
+            date_str=date_object
+        except:
+            date_str=datetime.strptime(date, '%d %b %Y')
+            #
+        #date=datetime.strptime(date,'%d %b %Y')
+        date = date_str
         print(link)
         print(desc)
         print(date)

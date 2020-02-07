@@ -10,10 +10,43 @@
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="{% static 'css/style.css' %}">
   </head>
+
+  <style>
+    #pageloader
+    {
+    background:#fafafa;
+    display: none;
+    height: 20%;
+    position: fixed;
+    width: 50%;
+    z-index: 9999;
+    }
+    #pageloader img
+    {
+    left: 50%;
+    margin-left: -32px;
+    margin-top: -32px;
+    position: absolute;
+    top: 50%;
+    }
+    </style>
+    
+
+  
+    <script>
+$(document).ready(function(){
+$("#search_form").on("submit", function(){
+    $("#pageloader").fadeIn();
+});//submit
+});//document ready
+</script>
+
+
+
   <body>
     
 		<div class="wrapper d-flex align-items-stretch">
-			<nav id="sidebar">
+			<nav id="sidebar" >
         <form action="{% url 'querypage:filter' %}" method="post">
           {% csrf_token %}
           <div class="p-4 pt-5">
@@ -67,9 +100,9 @@
                 <li>
                   <a > Case Study  <input type="checkbox" name="caseStudy" style="position: relative; float: right;"></a>
               </li> 
-              <li>
+              <!-- <li>
                 <a >  Organisation  <input type="checkbox" name="organisation" style="position: relative; float: right;"></a>
-            </li>
+            </li> -->
               </ul>
 	          </li>
                <li>
@@ -82,6 +115,7 @@
                 <li style="width: 100%;">
                   <a >To  <input type="month" class="start" name="DateTo" style="position: relative; float: right;"></a>
               </li>
+            
               <!-- <li style="width: 100%;"> 
                 <a >From2 <input type="month" class="start" name="Date" style="position: relative; float: right;"></a>
             </li> -->
@@ -91,6 +125,9 @@
 	         <li style="margin: 10px;" >
              <button type="submit" style="margin-left: 75px; margin-top: 10px; color: white; background-color: #f8b739; border: none; padding-left: 10px; padding-right: 10px; border-radius: 5px; font-weight: 600";>Apply</button>
            </li>
+           <li style="color: salmon;">
+            {{ error }}
+        </li>
 	        </ul>
 
 	        <div class="footer"><!-- 
@@ -121,7 +158,7 @@
               <div class="wrap" style="padding-right: 0%,align='center'">
                   <div class="search">
                      <!-- <form action></form> -->
-                     <form action ="{% url 'querypage:keyword' %}" method="post" style="align-items:baseline ">
+                     <form action ="{% url 'querypage:keyword' %}" method="post" style="align-items:baseline " id="search_form">
                       {% csrf_token %}
                      <input type="text" class="searchTerm" placeholder="What are you looking for?" name="keyword" default="pornography">
                      <button type="submit" class="searchButton">
@@ -155,7 +192,7 @@
           </div>
         
 <div> 
-     we  print the keyword
+     <!-- we  print the keyword
 
      the result is:{{ else }}
 
@@ -166,11 +203,10 @@
      CaseStudy:{{CaseStudy}}<br>
      Organisation:{{Organisation}}<br>
      DateForm:{{DateForm}}<br>
-     DateTo:{{DateTo}}<br>        
+     DateTo:{{DateTo}}<br>         -->
     <!-- <input name = "passValue2" value="{{ else }}"> -->
   <!-- </form> -->
-<br><br>
-The href of website with date greater than DateForm:{{DateForm}} <br>
+<!-- The href of website with date greater than DateForm:{{DateForm}} <br> -->
 
 
     {% for a in find %}
@@ -180,14 +216,35 @@ The href of website with date greater than DateForm:{{DateForm}} <br>
 {% endfor %}
     
 
-
+<!-- 
 <div class="card">
-  <!-- <img src="img_avatar2.png" alt="Avatar" style="width:100%"> -->
-  <div class="container">
-    <h4><b>Jane Doe</b></h4>
-    <p>Interior Designer</p>
+   <img src="img_avatar2.png" alt="Avatar" style="width:100%"> 
+  <div class="container"> -->
+    <!-- <h4><b>Jane Doe</b></h4>
+    <p>Interior Designer</p> -->
+    {% if All_objects %}
+    {% for a in All_objects %}
+    <div class="card" style="margin-top: 15px;">
+      <!-- <img src="img_avatar2.png" alt="Avatar" style="width:100%"> -->
+      <div class="container">
+    <h4> <b> <p> {{ a.description }}</p> </b> </h4>    
+    <p> <u> <a   href=" {{ a.href }} " target="_blank"> {{ a.href }} </a> </u> </p>
+     <!-- <p>{{ a.source }}</p> -->
+     
+     <p>{{ a.date }}</p>
+
+    </div>
   </div>
+
+{% endfor %}
+{%else%}
+<h3>Please enter the keyword to search</h3>
+{%endif%}
+
+<div id="pageloader">
+  <img src="http://cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-large.gif" alt="processing..." />
 </div>
+
 <style>
   .card {
     background-color: rgba(248, 183, 57, 0.1);

@@ -7,6 +7,7 @@ app_name='querypage'
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('querypage/',include('querypage.urls'))
+    path('',views.home,name='home'),
     path('landing/',views.landing,name='landing'),
     path('keyword/',views.keyword,name='keyword'),
     path('filter/',views.filter,name='filter'),

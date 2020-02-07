@@ -1,0 +1,62 @@
+<html>
+	<head>
+		<title>sPYder</title>
+		<style type="text/css">
+
+			.btn-1{
+				color:white;
+				border-radius: 50px;
+				font-size: 30px;
+				font-family: "Arial";
+				text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+				background-color: #f8b739 ;
+				border: none;
+				height: 60px;
+				width: 300px;
+
+			}
+			body {
+				
+				margin:0;
+				padding:0;
+			}
+			#particle-canvas {
+				position: fixed;
+				width:100%;
+				height:100%;
+				z-index: 1;
+			}
+		</style>
+		{%load static %}
+	</head>
+	<body>
+
+			<form action="{% url 'querypage:landing' %}" > 
+				{% csrf_token %}
+		<div id="particle-canvas" style="text-align: center;">
+			<img class="logo" src="{% static 'images/spyder.jpg' %}" style="height: 250px; width:250px; border-radius: 50%; z-index: 22; position: absolute; margin-left: 42% ; margin-top: 8% ">
+			<button type="submit" class="btn-1" style="z-index:22; position: absolute; margin-left: 40% ; margin-top: 28%" ><b>Get Started</b></button>
+		</div>
+	</form>
+
+		
+
+		<script type="text/javascript" src="{% static 'js/particle-network.min.js' %}"></script>
+		<script type="text/javascript">
+			var canvasDiv = document.getElementById('particle-canvas');
+			var options = {
+				particleColor: '#888',
+			
+				interactive: true,
+				speed: 'medium',
+				density: 'high'
+			};
+			var particleCanvas = new ParticleNetwork(canvasDiv, options);
+		</script>
+
+
+
+		
+
+	</body>
+</html>
